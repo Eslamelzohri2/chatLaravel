@@ -37,27 +37,26 @@ class AuthController extends Controller
             'user' => $user,
         ]);
     }
+public function login(Request $request)
+{
+    try {
+        $credentials = $request->only('email', 'password');
 
-    // تسجيل الدخول
-    public function login(Request $request)
-    {
-        try {
-            $credentials = $request->only('email', 'password');
-
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-
-            return response()->json([
-                'access_token' => $token,
-                'token_type' => 'bearer',
-                'expires_in' => JWTAuth::factory()->getTTL() * 60
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        if (!$token = auth('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
-    }
 
+        return response()->json([
+            'token' => $token,
+            'user' => auth('api')->user(),
+            'token_type' => 'bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60,
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Login error: ' . $e->getMessage());  // <-- هنا
+        return response()->json(['error' => 'Server Error'], 500);
+    }
+}
     // بيانات المستخدم الحالي
     public function me()
     {
