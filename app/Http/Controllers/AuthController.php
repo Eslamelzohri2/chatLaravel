@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    // تسجيل مستخدم جديد
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -37,25 +38,33 @@ class AuthController extends Controller
         ]);
     }
 
+    // تسجيل الدخول
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        try {
+            $credentials = $request->only('email', 'password');
 
-        if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => JWTAuth::factory()->getTTL() * 60
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        return response()->json([
-            'token' => $token,
-            'user' => auth()->user()
-        ]);
     }
 
+    // بيانات المستخدم الحالي
     public function me()
     {
         return response()->json(auth()->user());
     }
 
+    // تسجيل خروج
     public function logout(Request $request)
     {
         try {
