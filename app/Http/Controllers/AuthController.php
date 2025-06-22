@@ -8,6 +8,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -37,6 +38,7 @@ class AuthController extends Controller
             'user' => $user,
         ]);
     }
+
 public function login(Request $request)
 {
     try {
@@ -50,13 +52,14 @@ public function login(Request $request)
             'token' => $token,
             'user' => auth('api')->user(),
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => JWTAuth::factory()->getTTL() * 60,
         ]);
     } catch (\Exception $e) {
-        Log::error('Login error: ' . $e->getMessage());  // <-- هنا
+        Log::error('Login error: ' . $e->getMessage());
         return response()->json(['error' => 'Server Error'], 500);
     }
 }
+
     // بيانات المستخدم الحالي
     public function me()
     {
