@@ -1,11 +1,12 @@
 <?php
 return [
 
-    'paths' => [
-        'api/*',
-        'sanctum/csrf-cookie',
-        'broadcasting/auth', // ✅ مهم
-    ],
+    // 'paths' => [
+    //     'api/*',
+    //     'sanctum/csrf-cookie',
+    //     'broadcasting/auth', // ✅ مهم
+    // ],
+    'paths' => ['api/*', 'broadcasting/auth'],
 
     'allowed_methods' => ['*'],
 
